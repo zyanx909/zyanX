@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOVA AI – Trade smarter</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.coingecko.com https://api.binance.com https://api.devnet.solana.com">
+<style>
+:root{--bg:#05070c;--panel:#0b0f17;--line:#1a2230;--tx:#e9eef5;--mut:#8591a3;--g:#5fc24a;--v:#7c5cff;--r:#ef5350}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--tx);font:15px/1.5 "Segoe UI",system-ui,sans-serif}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+.wrap{max-width:1180px;margin:auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);position:sticky;top:0;background:#05070cee;z-index:5}
+header .wrap{display:flex;align-items:center;gap:22px;height:64px}
+.logo{font-weight:800;font-size:20px;letter-spacing:.04em}.logo b{color:var(--g)}
+nav{display:flex;gap:18px;flex:1;overflow-x:auto}
+nav a{color:var(--mut);white-space:nowrap;padding:6px 2px;border-bottom:2px solid transparent}
+nav a.on,nav a:hover{color:var(--tx);border-color:var(--g)}
+.btn{background:var(--g);color:#06100a;border:0;border-radius:6px;padding:10px 18px;font-weight:700}
+.btn.ghost{background:transparent;color:var(--tx);border:1px solid #2b3647}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.hero{padding:64px 0 40px;display:grid;grid-template-columns:1.1fr 1fr;gap:32px;align-items:center}
+.hero small{color:var(--g);font-weight:600}
+h1{font-size:clamp(40px,6vw,64px);line-height:1.05;margin:12px 0 16px}h1 span{color:var(--g)}
+.hero p{color:#c3ccd8;max-width:440px;margin-bottom:24px}
+.hero .row{display:flex;gap:12px;flex-wrap:wrap}
+.mock{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 0 80px #7c5cff22}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:8px 0 48px}
+.stats div{padding:18px 20px;border-right:1px solid var(--line)}.stats div:last-child{border:0}
+.stats b{display:block;font-size:22px}.stats span{color:var(--mut);font-size:13px}
+h2{font-size:28px;margin-bottom:6px}.sub{color:var(--mut);margin-bottom:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+.card h3{font-size:16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tag{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:4px;padding:1px 6px}
+.price{font-size:22px;font-weight:700;margin:8px 0 2px}
+.up{color:var(--g)}.dn{color:var(--r)}
+svg.spark{width:100%;height:46px;margin-top:8px}
+.note{color:var(--mut);font-size:13px;margin-top:10px}
+section{padding:40px 0;border-top:1px solid var(--line)}
+.grid2{display:grid;grid-template-columns:1.2fr 1fr;gap:18px}
+.badge{display:inline-block;font-size:12px;font-weight:700;border-radius:4px;padding:2px 8px}
+.badge.sim{background:#7c5cff26;color:#b4a2ff;border:1px solid #7c5cff66}
+.badge.real{background:#5fc24a1f;color:var(--g);border:1px solid #5fc24a66}
+label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+input,select{width:100%;background:#070a10;color:var(--tx);border:1px solid #263043;border-radius:6px;padding:9px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}th{color:var(--mut);font-weight:500}
+.warn{background:#ef535014;border:1px solid #ef535055;border-radius:8px;padding:10px 12px;font-size:13px;margin-top:12px}
+.err{color:var(--r);font-size:13px;margin-top:8px;min-height:18px}
+footer{border-top:1px solid var(--line);padding:28px 0;color:var(--mut);font-size:13px}
+@media(max-width:860px){.hero,.grid2{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.stats div{border-bottom:1px solid var(--line)}}
+@media(prefers-reduced-motion:no-preference){.btn{transition:filter .15s}.btn:hover:not(:disabled){filter:brightness(1.1)}}
+</style></head>
+<body>
+<header><div class="wrap">
+ <a class="logo" href="#top">NOVA <b>AI</b></a>
+ <nav>
+  <a href="#top" class="on">Dashboard</a><a href="#markets">Markets</a><a href="#assistant">AI Assistant</a>
+  <a href="#trade">Trade</a><a href="#portfolio">Portfolio</a><a href="#portfolio">Watchlist</a><a href="#history">Trade History</a><a href="#settings">Settings</a>
+ </nav>
+ <button class="btn ghost" id="walletBtn">Connect Phantom</button>
+</div></header>
+
+<main id="top" class="wrap">
+ <div class="hero">
+  <div>
+   <small>Paper trading first. Real swaps only with your approval.</small>
+   <h1>Trade. Learn.<br><span>Grow.</span></h1>
+   <p>Practise with virtual funds, then connect Phantom for approved Solana assets. Every real transaction needs your explicit sign-off in your wallet.</p>
+   <div class="row"><a class="btn" href="#trade">Start paper trading</a><a class="btn ghost" href="#markets">Explore markets</a></div>
+  </div>
+  <div class="mock">
+   <div style="display:flex;justify-content:space-between"><span>Paper portfolio</span><span class="badge sim">SIMULATED</span></div>
+   <div class="price" id="heroVal">$0.00</div>
+   <div class="note" id="heroSub">Virtual funds only. Never combined with your wallet.</div>
+   <svg class="spark" id="heroSpark" viewBox="0 0 300 80" style="height:90px" aria-hidden="true"></svg>
+  </div>
+ </div>
+
+ <div class="stats">
+  <div><b id="sCash">$0</b><span>Paper cash</span></div>
+  <div><b id="sPnl">$0</b><span>Paper P/L (simulated)</span></div>
+  <div><b id="sWallet">Not connected</b><span>Real wallet SOL (separate)</span></div>
+  <div><b id="sUpd">–</b><span>Market data updated</span></div>
+ </div>
+
+ <section id="markets" style="border:0;padding-top:0">
+  <h2>Supported markets</h2>
+  <p class="sub">Admin-approved assets only. Prices are general market data, not executable swap quotes.</p>
+  <div class="cards" id="mkts"></div>
+  <p class="note" id="mktErr"></p>
+  <p class="note">BTC, ETH and DOGE are separate networks from Solana. On Solana they exist only as wrapped or bridged tokens, and each needs an approved mint address before real trading is enabled.</p>
+ </section>
+
+ <section id="trade">
+  <h2>Trade</h2>
+  <div class="grid2">
+   <div class="card">
+    <h3>Paper order <span class="badge sim">SIMULATED</span></h3>
+    <label for="asset">Asset</label><select id="asset"></select>
+    <label for="side">Side</label><select id="side"><option value="buy">Buy</option><option value="sell">Sell</option></select>
+    <label for="qty">Quantity</label><input id="qty" type="number" min="0" step="any" inputmode="decimal">
+    <p class="note">Market order at the latest price. Assumed fee 0.10% and slippage 0.05%. No blockchain transaction is sent.</p>
+    <p class="err" id="orderErr" role="alert"></p>
+    <button class="btn" id="placeBtn">Place simulated order</button>
+   </div>
+   <div class="card">
+    <h3>Real swap <span class="badge real">REAL</span></h3>
+    <p class="note" style="margin-top:10px">Disabled. A real swap needs a connected wallet, an approved mint, a validated quote from your backend, and your approval in Phantom.</p>
+    <button class="btn" id="swapBtn" disabled style="margin-top:14px">Review swap</button>
+    <div class="warn">Blockchain transactions can be irreversible. Nothing is signed or sent from this page.</div>
+   </div>
+  </div>
+ </section>
+
+ <section id="portfolio">
+  <h2>Portfolio</h2>
+  <div class="grid2">
+   <div class="card"><h3>Paper holdings <span class="badge sim">SIMULATED</span></h3>
+    <table><thead><tr><th>Asset</th><th>Qty</th><th>Avg entry</th><th>Unrealized</th></tr></thead><tbody id="hold"></tbody></table>
+    <p class="note" id="holdEmpty">No holdings yet.</p></div>
+   <div class="card"><h3>Real wallet <span class="badge real">REAL</span></h3>
+    <p id="wInfo" class="note" style="margin-top:10px">Connect Phantom to see your public address and SOL balance.</p></div>
+  </div>
+ </section>
+
+ <section id="history">
+  <h2>Trade history</h2>
+  <div class="card"><table><thead><tr><th>Time</th><th>Side</th><th>Asset</th><th>Qty</th><th>Price</th><th>Fee</th><th>Realized P/L</th></tr></thead><tbody id="hist"></tbody></table>
+  <p class="note">Paper ledger only. On-chain records will appear separately once the backend is connected.</p></div>
+ </section>
+
+ <section id="assistant">
+  <h2>AI assistant</h2>
+  <div class="card"><p class="note">Unavailable until the backend is running. The AI key stays on the server, and the assistant can explain trades but never sign or submit them.</p>
+  <label for="ai">Ask about a market</label><input id="ai" disabled placeholder="Backend required"></div>
+ </section>
+
+ <section id="settings">
+  <h2>Settings</h2>
+  <div class="card"><button class="btn ghost" id="resetBtn">Reset paper portfolio</button>
+  <p class="note">Paper data is stored in this browser only. Persistent accounts and server-side validation need the backend.</p></div>
+ </section>
+</main>
+<footer><div class="wrap">Risk warning: trading involves risk. AI output and indicators are estimates, not advice, and nothing here guarantees profit. Paper results are not real profit.</div></footer>
+
+<script>
+const ASSETS=[{id:"bitcoin",sym:"BTC",name:"Bitcoin",bn:"BTCUSDT"},{id:"ethereum",sym:"ETH",name:"Ethereum",bn:"ETHUSDT"},{id:"solana",sym:"SOL",name:"Solana",bn:"SOLUSDT"},{id:"dogecoin",sym:"DOGE",name:"Dogecoin",bn:"DOGEUSDT"},{id:"ripple",sym:"XRP",name:"XRP",bn:"XRPUSDT"},{id:"binancecoin",sym:"BNB",name:"BNB",bn:"BNBUSDT"},{id:"cardano",sym:"ADA",name:"Cardano",bn:"ADAUSDT"},{id:"avalanche-2",sym:"AVAX",name:"Avalanche",bn:"AVAXUSDT"},{id:"chainlink",sym:"LINK",name:"Chainlink",bn:"LINKUSDT"},{id:"litecoin",sym:"LTC",name:"Litecoin",bn:"LTCUSDT"},{id:"polkadot",sym:"DOT",name:"Polkadot",bn:"DOTUSDT"},{id:"tron",sym:"TRX",name:"TRON",bn:"TRXUSDT"}];
+const START=10000,FEE=0.001,SLIP=0.0005,KEY="nova_paper_v1";
+const $=id=>document.getElementById(id);
+const usd=n=>n==null?"–":"$"+Number(n).toLocaleString(undefined,{maximumFractionDigits:n<1?5:2});
+let mk={},state=load();
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s.cash==="number")return s}catch(e){}return{cash:START,pos:{},hist:[],realized:0}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function el(t,txt,cls){const e=document.createElement(t);if(txt!=null)e.textContent=txt;if(cls)e.className=cls;return e}
+function spark(data,up){if(!data||data.length<2)return"";const mn=Math.min(...data),mx=Math.max(...data),w=300,h=80;
+ return"M"+data.map((v,i)=>(i/(data.length-1)*w).toFixed(1)+","+(h-4-(v-mn)/((mx-mn)||1)*(h-8)).toFixed(1)).join(" L")}
+function drawSpark(svg,data,up){svg.textContent="";const p=document.createElementNS("http://www.w3.org/2000/svg","path");
+ p.setAttribute("d",spark(data,up));p.setAttribute("fill","none");p.setAttribute("stroke",up?"#5fc24a":"#ef5350");p.setAttribute("stroke-width","2");svg.append(p)}
+
+const J=async(u)=>{const r=await fetch(u,{signal:AbortSignal.timeout(9000)});if(!r.ok)throw new Error(new URL(u,location.href).host+" HTTP "+r.status);return r.json()};
+const norm=r=>({current_price:r.price,price_change_percentage_24h:r.change24h,total_volume:r.volume,market_cap:r.cap,sparkline_in_7d:{price:r.spark}});
+const SOURCES=[
+ ["NOVA server",async()=>{const j=await J("/api/markets");return{rows:j.data.map(r=>[r.id,norm(r)]),note:(j.stale?"Stale data. ":"")+"via "+j.source}}],
+ ["CoinGecko",async()=>({rows:(await J("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids="+ASSETS.map(a=>a.id).join(",")+"&sparkline=true")).map(c=>[c.id,c]),note:"via CoinGecko"})],
+ ["Binance",async()=>{const t=await J("https://api.binance.com/api/v3/ticker/24hr?symbols="+encodeURIComponent(JSON.stringify(ASSETS.map(a=>a.bn))));
+  return{rows:t.map(x=>[ASSETS.find(a=>a.bn===x.symbol).id,norm({price:+x.lastPrice,change24h:+x.priceChangePercent,volume:+x.quoteVolume,cap:null,spark:null})]),note:"via Binance (no market cap)"}}]];
+async function loadMarkets(){
+ const fails=[];
+ for(const[name,fn]of SOURCES){
+  try{const{rows,note}=await fn();if(!rows.length)throw new Error("empty");
+   rows.forEach(([id,c])=>mk[id]=c);$("mktErr").textContent="Live data "+note+".";$("sUpd").textContent=new Date().toLocaleTimeString();fails.length=0;renderMarkets();renderAll();return}
+  catch(e){fails.push(name+": "+(e.message||"failed"))}}
+ $("mktErr").textContent="Could not load live prices ("+fails.join("; ")+"). Run the site with node server.js. Prices are never estimated.";
+ renderMarkets();renderAll();
+}
+function renderMarkets(){
+ const box=$("mkts");box.textContent="";
+ ASSETS.forEach(a=>{const c=mk[a.id],card=el("div",null,"card");
+  const h=el("h3",a.name);h.append(el("span",a.sym,"tag"));card.append(h);
+  if(!c){card.append(el("div","Unavailable. See message below.","note"));box.append(card);return}
+  const ch=c.price_change_percentage_24h,up=ch>=0;
+  card.append(el("div",usd(c.current_price),"price"),el("div",(ch==null?"–":(up?"+":"")+ch.toFixed(2)+"%")+" 24h",up?"up":"dn"),
+   el("div","Vol "+usd(c.total_volume)+(c.market_cap?" · Cap "+usd(c.market_cap):""),"note"));
+  const s=document.createElementNS("http://www.w3.org/2000/svg","svg");s.setAttribute("class","spark");s.setAttribute("viewBox","0 0 300 80");s.setAttribute("preserveAspectRatio","none");
+  drawSpark(s,c.sparkline_in_7d&&c.sparkline_in_7d.price,up);card.append(s);box.append(card)});
+}
+function equity(){let v=state.cash,u=0;for(const id in state.pos){const p=state.pos[id],c=mk[id];if(c){v+=p.qty*c.current_price;u+=p.qty*(c.current_price-p.avg)}else v+=p.qty*p.avg}return{v,u}}
+function renderAll(){
+ const{v,u}=equity();$("heroVal").textContent=usd(v);$("sCash").textContent=usd(state.cash);
+ $("sPnl").textContent=usd(state.realized+u);
+ const hist=state.hist.slice(-30).map(h=>h.eq);if(hist.length>1)drawSpark($("heroSpark"),hist,v>=START);
+ const tb=$("hold");tb.textContent="";const ids=Object.keys(state.pos);$("holdEmpty").style.display=ids.length?"none":"block";
+ ids.forEach(id=>{const p=state.pos[id],a=ASSETS.find(x=>x.id===id),c=mk[id],tr=el("tr");
+  const un=c?p.qty*(c.current_price-p.avg):null;
+  [a.sym,p.qty.toFixed(6),usd(p.avg),un==null?"–":usd(un)].forEach((t,i)=>{const td=el("td",t);if(i===3&&un!=null)td.className=un>=0?"up":"dn";tr.append(td)});tb.append(tr)});
+ const hb=$("hist");hb.textContent="";state.hist.slice().reverse().slice(0,50).forEach(h=>{const tr=el("tr");
+  [new Date(h.t).toLocaleString(),h.side.toUpperCase()+" (SIM)",h.sym,h.qty.toFixed(6),usd(h.price),usd(h.fee),h.pl==null?"–":usd(h.pl)].forEach(t=>tr.append(el("td",t)));hb.append(tr)});
+}
+function order(){
+ const err=$("orderErr");err.textContent="";
+ const a=ASSETS.find(x=>x.id===$("asset").value),side=$("side").value,qty=Number($("qty").value),c=mk[a&&a.id];
+ if(!a)return err.textContent="Choose an approved asset.";
+ if(!c)return err.textContent="No live price for "+a.sym+". Orders are blocked until data loads.";
+ if(!isFinite(qty)||qty<=0)return err.textContent="Enter a quantity greater than zero.";
+ const px=c.current_price*(side==="buy"?1+SLIP:1-SLIP),gross=qty*px,fee=gross*FEE;let pl=null;
+ if(side==="buy"){
+  if(gross+fee>state.cash)return err.textContent="Not enough paper cash. You need "+usd(gross+fee)+".";
+  const p=state.pos[a.id]||{qty:0,avg:0};p.avg=(p.qty*p.avg+gross)/(p.qty+qty);p.qty+=qty;state.pos[a.id]=p;state.cash-=gross+fee;
+ }else{
+  const p=state.pos[a.id];if(!p||qty>p.qty+1e-12)return err.textContent="You hold "+(p?p.qty.toFixed(6):"0")+" "+a.sym+". Reduce the quantity.";
+  pl=qty*(px-p.avg)-fee;state.realized+=pl;state.cash+=gross-fee;p.qty-=qty;if(p.qty<1e-12)delete state.pos[a.id];
+ }
+ state.hist.push({t:Date.now(),side,sym:a.sym,qty,price:px,fee,pl,eq:0});state.hist[state.hist.length-1].eq=equity().v;
+ save();$("qty").value="";renderAll();
+}
+function short(k){return k.slice(0,4)+"…"+k.slice(-4)}
+let prov=null;
+async function connect(){
+ const p=window.phantom&&window.phantom.solana;
+ if(!p||!p.isPhantom){$("wInfo").textContent="Phantom not found. Install it from phantom.app, then reload.";return}
+ try{const r=await p.connect();prov=p;const pk=r.publicKey.toString();
+  $("walletBtn").textContent=short(pk)+" · Disconnect";$("wInfo").textContent="Connected "+short(pk)+" · RPC: devnet (configured here). Fetching balance…";
+  const b=await fetch("https://api.devnet.solana.com",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:1,method:"getBalance",params:[pk]})}).then(x=>x.json());
+  if(b.result){const sol=b.result.value/1e9;$("sWallet").textContent=sol.toFixed(4)+" SOL (devnet)";$("wInfo").textContent="Address "+short(pk)+" · Devnet · "+sol.toFixed(4)+" SOL. Token balances need the backend."}
+  else throw new Error("Balance unavailable");
+ }catch(e){$("wInfo").textContent=e&&e.code===4001?"Connection request rejected in Phantom.":"Could not connect or read balance. Try again."}
+}
+async function disconnect(){try{await prov.disconnect()}catch(e){}prov=null;$("walletBtn").textContent="Connect Phantom";$("sWallet").textContent="Not connected";$("wInfo").textContent="Disconnected."}
+$("walletBtn").onclick=()=>prov?disconnect():connect();
+$("placeBtn").onclick=order;
+$("resetBtn").onclick=()=>{if(confirm("Reset your paper portfolio to $"+START.toLocaleString()+"? History will be cleared.")){state={cash:START,pos:{},hist:[],realized:0};save();renderAll()}};
+ASSETS.forEach(a=>{const o=el("option",a.name+" ("+a.sym+")");o.value=a.id;$("asset").append(o)});
+document.querySelectorAll("nav a").forEach(a=>a.onclick=()=>{document.querySelectorAll("nav a").forEach(x=>x.classList.remove("on"));a.classList.add("on")});
+renderMarkets();renderAll();loadMarkets();setInterval(loadMarkets,60000);
+</script>
+</body></html>
